@@ -18,7 +18,7 @@ def stream_users_in_batches(batch_size):
         # Execute the query
         cursor.execute("SELECT * FROM user_data")
         
-        # Fetch rows in batches
+        # Fetch rows in batches using yield
         while True:
             batch = cursor.fetchmany(batch_size)
             if not batch:
@@ -27,6 +27,7 @@ def stream_users_in_batches(batch_size):
             
     except mysql.connector.Error as err:
         print(f"Database error: {err}")
+        yield []  # Yield empty list on error
     finally:
         # Clean up resources
         if 'cursor' in locals():
@@ -36,10 +37,8 @@ def stream_users_in_batches(batch_size):
 
 def batch_processing(batch_size):
     """Processes user batches and filters users over 25 years old"""
-    # First loop: iterate through batches
+    # Generator that yields filtered users
     for batch in stream_users_in_batches(batch_size):
-        # Second loop: process users in batch
         for user in batch:
-            # Third loop: filter condition (implicit in comprehension)
             if user['age'] > 25:
-                print(user)
+                yield user  # Using yield instead of print
