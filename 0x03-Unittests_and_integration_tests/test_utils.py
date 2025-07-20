@@ -27,6 +27,7 @@ class TestAccessNestedMap(unittest.TestCase):
             access_nested_map(nested_map, path)
         self.assertEqual(str(cm.exception), expected_message)
 
+
 class TestGetJson(unittest.TestCase):
     @parameterized.expand([
         ("http://example.com", {"payload": True}),
@@ -43,11 +44,10 @@ class TestGetJson(unittest.TestCase):
         result = get_json(test_url)
 
         # Assertions
-        mock_get.assert_called_once_with(test_url)  # Verify correct URL used
-        self.assertEqual(result, test_payload)  # Verify returned JSON
-
-
-
+        # Verify correct URL used
+        mock_get.assert_called_once_with(test_url)
+        # Verify returned JSON
+        self.assertEqual(result, test_payload)
 class TestMemoize(unittest.TestCase):
     """Test case for the memoize decorator."""
 
@@ -78,6 +78,8 @@ class TestMemoize(unittest.TestCase):
             mock_method.assert_called_once()
 
 
+if __name__ == "__main__":
+    unittest.main()
 
 if __name__ == "__main__":
     unittest.main()
