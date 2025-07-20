@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+"""Unit tests for utils.py"""
+
 import unittest
 from unittest.mock import patch, Mock
 from utils import access_nested_map, get_json, memoize
@@ -21,7 +22,9 @@ class TestAccessNestedMap(unittest.TestCase):
         ({}, ("a",), "'a'"),
         ({"a": 1}, ("a", "b"), "'b'"),
     ])
-    def test_access_nested_map_exception(self, nested_map, path, expected_message):
+    def test_access_nested_map_exception(
+        self, nested_map, path, expected_message
+    ):
         """Test that access_nested_map raises KeyError when path is invalid"""
         with self.assertRaises(KeyError) as cm:
             access_nested_map(nested_map, path)
@@ -29,25 +32,25 @@ class TestAccessNestedMap(unittest.TestCase):
 
 
 class TestGetJson(unittest.TestCase):
+    """Test cases for get_json function"""
+
     @parameterized.expand([
         ("http://example.com", {"payload": True}),
         ("http://holberton.io", {"payload": False}),
     ])
     @patch('utils.requests.get')
     def test_get_json(self, test_url, test_payload, mock_get):
-        # Mock response object
+        """Test that get_json returns expected payload from mocked requests"""
         mock_response = Mock()
         mock_response.json.return_value = test_payload
         mock_get.return_value = mock_response
 
-        # Call the actual function
         result = get_json(test_url)
 
-        # Assertions
-        # Verify correct URL used
         mock_get.assert_called_once_with(test_url)
-        # Verify returned JSON
         self.assertEqual(result, test_payload)
+
+
 class TestMemoize(unittest.TestCase):
     """Test case for the memoize decorator."""
 
@@ -77,9 +80,6 @@ class TestMemoize(unittest.TestCase):
             self.assertEqual(result2, 42)
             mock_method.assert_called_once()
 
-
-if __name__ == "__main__":
-    unittest.main()
 
 if __name__ == "__main__":
     unittest.main()
