@@ -50,7 +50,6 @@ class TestGithubOrgClient(unittest.TestCase):
     @patch('client.get_json')
     def test_public_repos(self, mock_get_json):
         """Test GithubOrgClient.public_repos method"""
-
         mock_payload = [
             {"name": "repo1", "license": {"key": "mit"}},
             {"name": "repo2", "license": {"key": "apache-2.0"}},
@@ -81,14 +80,8 @@ class TestGithubOrgClient(unittest.TestCase):
     ])
     def test_has_license(self, repo, license_key, expected):
         """Test has_license static method"""
-
         result = GithubOrgClient.has_license(repo, license_key)
         self.assertEqual(result, expected)
-
-
-# Helper function for naming parameterized test classes
-def custom_name_func(cls, num, params_dict):
-    return "%s_%s" % (cls.__name__, num)
 
 
 @parameterized_class([
@@ -98,7 +91,7 @@ def custom_name_func(cls, num, params_dict):
         "expected_repos": fixtures.expected_repos,
         "apache2_repos": fixtures.apache2_repos,
     }
-], class_name_func=custom_name_func)
+])
 class TestIntegrationGithubOrgClient(unittest.TestCase):
     """Integration tests for GithubOrgClient.public_repos"""
 
