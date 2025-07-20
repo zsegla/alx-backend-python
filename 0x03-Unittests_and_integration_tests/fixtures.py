@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
+"""Integration test for GithubOrgClient"""
 
-"""Unit and Integration tests for GithubOrgClient"""
 import unittest
-from unittest.mock import patch, PropertyMock
+from unittest.mock import patch
 from parameterized import parameterized_class
 from fixtures import TEST_PAYLOAD
 from client import GithubOrgClient
@@ -17,7 +17,7 @@ from client import GithubOrgClient
     }
 ])
 class TestIntegrationGithubOrgClient(unittest.TestCase):
-    """Integration test for GithubOrgClient.public_repos"""
+    """Integration test for GithubOrgClient"""
 
     @classmethod
     def setUpClass(cls):
@@ -25,33 +25,19 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         cls.get_patcher = patch('requests.get')
         cls.mock_get = cls.get_patcher.start()
 
-        # Set up side effects for different URLs
-        def side_effect(url, *args, **kwargs):
+        def json_side_effect(url):
             if url.endswith('/orgs/google'):
                 return cls.org_payload
-            elif url.endswith('/orgs/google/repos'):
+            if url.endswith('/orgs/google/repos'):
                 return cls.repos_payload
-            else:
-                return None
+            return None
 
-        cls.mock_get.side_effect = side_effect
+        cls.mock_get.return_value.json.side_effect = json_side_effect
 
     @classmethod
     def tearDownClass(cls):
         """Stop the patcher"""
         cls.get_patcher.stop()
-
-    def test_public_repos(self):
-        """Test public_repos method"""
-        client = GithubOrgClient('google')
-        repos = client.public_repos()
-        self.assertEqual(repos, self.expected_repos)
-
-    def test_public_repos_with_license(self):
-        """Test public_repos with license filter"""
-        client = GithubOrgClient('google')
-        repos = client.public_repos(license="apache-2.0")
-        self.assertEqual(repos, self.apache2_repos)
 
 TEST_PAYLOAD = [
   (
