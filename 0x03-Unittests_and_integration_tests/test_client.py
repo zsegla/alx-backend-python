@@ -7,13 +7,7 @@ from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
 import fixtures
 
-@parameterized_class([
-    {"foo": 1, "bar": 2}
-])
-class MyTest(unittest.TestCase):
-    def test_sample(self):
-        self.assertEqual(self.foo + self.bar, 3)
-        
+
 class TestGithubOrgClient(unittest.TestCase):
     """Test class for GithubOrgClient"""
 
@@ -92,6 +86,11 @@ class TestGithubOrgClient(unittest.TestCase):
         self.assertEqual(result, expected)
 
 
+# Helper function for naming parameterized test classes
+def custom_name_func(cls, num, params_dict):
+    return "%s_%s" % (cls.__name__, num)
+
+
 @parameterized_class([
     {
         "org_payload": fixtures.org_payload,
@@ -99,7 +98,7 @@ class TestGithubOrgClient(unittest.TestCase):
         "expected_repos": fixtures.expected_repos,
         "apache2_repos": fixtures.apache2_repos,
     }
-])
+], class_name_func=custom_name_func)
 class TestIntegrationGithubOrgClient(unittest.TestCase):
     """Integration tests for GithubOrgClient.public_repos"""
 
@@ -117,7 +116,7 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
                 def json(self):
                     return self._json_data
 
-            if url == f"https://api.github.com/orgs/test-org":
+            if url == "https://api.github.com/orgs/test-org":
                 return MockResponse(cls.org_payload)
             elif url == cls.org_payload["repos_url"]:
                 return MockResponse(cls.repos_payload)
