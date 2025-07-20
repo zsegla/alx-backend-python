@@ -7,7 +7,13 @@ from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
 import fixtures
 
-
+@parameterized_class([
+    {"foo": 1, "bar": 2}
+])
+class MyTest(unittest.TestCase):
+    def test_sample(self):
+        self.assertEqual(self.foo + self.bar, 3)
+        
 class TestGithubOrgClient(unittest.TestCase):
     """Test class for GithubOrgClient"""
 
