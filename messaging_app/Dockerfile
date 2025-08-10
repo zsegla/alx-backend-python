@@ -1,4 +1,4 @@
-# Use the official Python 3.10 image
+# Base image (Python 3.10)
 FROM python:3.10
 
 # Set environment variables
@@ -6,17 +6,17 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # Set work directory
-WORKDIR /code
+WORKDIR /app
 
 # Install dependencies
-COPY requirements.txt /code/
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project
-COPY . /code/
+# Copy project files
+COPY . .
 
-# Expose port 8000 for Django
+# Expose port 8000 (Django default)
 EXPOSE 8000
 
-# Command to run the application
+# Run Django (adjust if using Gunicorn/etc.)
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
