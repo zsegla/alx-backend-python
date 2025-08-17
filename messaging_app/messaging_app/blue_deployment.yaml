@@ -1,0 +1,28 @@
+# File: messaging_app/blue_deployment.yaml
+# Represents the updated version of the application with a new image.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: messaging-app-blue
+  labels:
+    app: messaging-app
+    version: blue
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: messaging-app
+      version: blue
+  template:
+    metadata:
+      labels:
+        app: messaging-app
+        version: blue
+    spec:
+      containers:
+      - name: messaging-app-container
+        # The image is updated to version 2.0 to trigger the rolling update.
+        image: your-repo/django-app:2.0
+        ports:
+        - containerPort: 8000

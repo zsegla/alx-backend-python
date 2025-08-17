@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+# File: messaging_app/kubctl-0x03
+# This script applies the updated deployment and monitors a rolling update.
+
+# Define the deployment name
+DEPLOYMENT_NAME="messaging-app-blue"
+# Define the service URL to test
+SERVICE_URL="http://localhost"  # Adjust this URL to your actual service endpoint
+
+# Step 1: Apply the updated deployment file
+echo "Applying the updated deployment file to trigger a rolling update..."
+kubectl apply -f blue_deployment.yaml
+
+# Step 2: Monitor the update progress
+echo "Monitoring the rolling update progress..."
+kubectl rollout status deployment/$DEPLOYMENT_NAME &
+ROLLOUT_PID=$!
+
+# Step 3: Continuously test the service for downtime
+echo "Continuously sending requests to the app to check for downtime..."
+echo "Press Ctrl+C to stop the curl loop."
+while true; do
+    # Use curl with a short timeout and silent output
+    curl -s --max-time 2 $SERVICE_URL
+    if [ $? -ne 0 ]; then
+        echo "--> Detected potential downtime! The request failed."
+        # You can add more detailed logging here if needed
+    fi
+    sleep 1
+done &
+CURL_PID=$!
+
+# Wait for the rollout status to complete
+wait $ROLLOUT_PID
+
+echo "The rolling update is complete."
+
+# Clean up background processes
+kill $CURL_PID
+wait $CURL_PID 2>/dev/null
+
+# Step 4: Verify the Rolling Update is Complete by checking the current pods
+echo "Verifying the rolling update by listing the current pods..."
+kubectl get pods -l app=messaging-app
