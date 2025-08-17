@@ -1,63 +1,33 @@
 #!/bin/bash
 
-# Script: kurbeScript-mac
-# Purpose: Set up a local Kubernetes cluster using Minikube, verify its status, and list pods on macOS.
+# kurbeScript: Set up and verify a local Kubernetes cluster using minikube
 
 set -e
 
-# Function to check if a command exists
-command_exists () {
-  command -v "$1" >/dev/null 2>&1
-}
-
-# Check and install Docker Desktop
-echo "Checking for Docker Desktop..."
-if ! command_exists docker; then
-    echo "Docker Desktop is not installed. Please install it from https://www.docker.com/products/docker-desktop/"
-    echo "This script will exit. Please run it again after installing and starting Docker Desktop."
+# Check if minikube is installed
+if ! command -v minikube >/dev/null 2>&1; then
+    echo "Minikube is not installed. Please install minikube first."
     exit 1
-else
-    echo "Docker is already installed."
-    # Ensure Docker is running.
-    # In macOS, 'docker info' will fail if the daemon isn't running.
-    if ! docker info &> /dev/null; then
-        echo "Docker is not running. Please start Docker Desktop and run this script again."
-        exit 1
-    fi
-    echo "Docker is running."
 fi
 
-# Check and install Minikube
-echo "Checking for Minikube..."
-if ! command_exists minikube; then
-    echo "Minikube is not installed. Installing with Homebrew..."
-    brew install minikube
-    echo "Minikube installed successfully."
-else
-    echo "Minikube is already installed."
+# Check if kubectl is installed
+if ! command -v kubectl >/dev/null 2>&1; then
+    echo "kubectl is not installed. Please install kubectl first."
+    exit 1
 fi
 
-# Check and install kubectl
-echo "Checking for kubectl..."
-if ! command_exists kubectl; then
-    echo "kubectl is not installed. Installing with Homebrew..."
-    brew install kubectl
-    echo "kubectl installed successfully."
+# Start minikube cluster if not already running
+if ! minikube status | grep -q "host: Running"; then
+    echo "Starting minikube cluster..."
+    minikube start
 else
-    echo "kubectl is already installed."
+    echo "Minikube cluster is already running."
 fi
 
-# Start Minikube cluster using the Docker driver
-echo "Starting Minikube cluster..."
-minikube start --driver=docker
-
-# Verify cluster status
+# Verify cluster info
 echo "Verifying Kubernetes cluster status..."
 kubectl cluster-info
 
-# Retrieve available pods
-echo "Listing all pods in the cluster..."
+# Retrieve available pods in all namespaces
+echo "Listing all pods in all namespaces:"
 kubectl get pods --all-namespaces
-
-# Exit with success status
-exit 0
