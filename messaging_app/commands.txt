@@ -1,0 +1,8 @@
+# Command to install the NGINX Ingress Controller
+# This command applies a set of manifests from the NGINX project
+# to create the necessary resources (Deployment, Service, etc.) for the controller.
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.8.1/deploy/static/provider/cloud/deploy.yaml
+
+# Command to apply your custom Ingress resource configuration
+# This command creates the Ingress object that routes traffic to your Django app.
+kubectl apply -f ingress.yaml
