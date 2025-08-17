@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# File: messaging_app/kubctl-0x01
+
+# The script name is kubctl-0x01, as per the instructions.
+# No file extension is required for shell scripts in Linux.
+
+# Step 1: Scale the Django app deployment to 3 replicas
+echo "Scaling the Django app deployment to 3 replicas..."
+kubectl scale deployment/messaging-app-deployment --replicas=3
+
+# Step 2: Verify that multiple pods are running
+echo "Verifying that multiple pods are running..."
+kubectl get pods -l app=messaging-app
+
+# Step 3: Perform load testing on the app using wrk
+echo "Performing load testing with wrk..."
+# Note: You may need to replace the URL with the correct one for your service.
+# Assuming the service is exposed via a NodePort or LoadBalancer and is accessible.
+# The URL should point to your Django app's endpoint.
+# Example: If your service is accessible at http://<node-ip>:<node-port>
+# or a LoadBalancer IP.
+wrk -t4 -c100 -d30s http://<your-service-url>
+
+# Step 4: Monitor resource usage of the pods
+echo "Monitoring resource usage of the scaled pods..."
+kubectl top pods -l app=messaging-app
