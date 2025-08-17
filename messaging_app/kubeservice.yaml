@@ -1,0 +1,19 @@
+# File: messaging_app/kubeservice.yaml
+# The service acts as the single entry point and routes traffic to the
+# pods with matching labels.
+apiVersion: v1
+kind: Service
+metadata:
+  name: messaging-app-service
+spec:
+  selector:
+    app: messaging-app
+    # The selector initially points to the blue deployment.
+    # To switch traffic to green, you would change this line to:
+    # version: green
+    version: blue
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP

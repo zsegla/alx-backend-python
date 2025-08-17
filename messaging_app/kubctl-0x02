@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# File: messaging_app/kubctl-0x02
+# This script applies the blue and green deployment manifests and checks logs.
+
+echo "Deploying the blue (current) version of the application..."
+kubectl apply -f blue_deployment.yaml
+
+echo "Deploying the green (new) version of the application..."
+kubectl apply -f green_deployment.yaml
+
+# Wait for a few seconds to give the new pods time to start
+echo "Waiting 10 seconds for green pods to become available..."
+sleep 10
+
+echo "Checking the logs of the new green pods for errors..."
+# Find all pods with the 'green' version label and stream their logs.
+# The `set --` is used to handle potential pod names with hyphens.
+# The `-f` flag streams the logs, you can press Ctrl+C to stop.
+for pod in $(kubectl get pods -l version=green -o=jsonpath='{.items[*].metadata.name}'); do
+    echo "--- Logs for pod: $pod ---"
+    kubectl logs $pod
+done
+
+echo "Deployment of both versions is complete."
+echo "The service is currently routing traffic to the blue version."
+echo "To switch traffic, edit the 'kubeservice.yaml' file and change the 'version' selector from 'blue' to 'green'."

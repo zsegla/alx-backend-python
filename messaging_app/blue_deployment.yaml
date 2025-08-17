@@ -1,0 +1,29 @@
+# File: messaging_app/blue_deployment.yaml
+# Represents the current, stable version of the application.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: messaging-app-blue
+  labels:
+    app: messaging-app
+    version: blue
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: messaging-app
+      version: blue
+  template:
+    metadata:
+      labels:
+        app: messaging-app
+        version: blue
+    spec:
+      containers:
+      - name: messaging-app-container
+        # Replace this with the image for your blue version.
+        # Example: a tagged image like your-repo/django-app:v1.0
+        image: your-repo/django-app:blue-version
+        ports:
+        - containerPort: 8000
